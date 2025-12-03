@@ -51,8 +51,8 @@ class upload(APIView):
     )
     def post(self, request):
         upload = imagekit.upload(
-        file="https://ik.imagekit.io/ikmedia/red_dress_woman.jpeg",
-        file_name="women_in_red.jpg",
+        file="https://ik.imagekit.io/nnatxct7i/sample-video_test_Kd8D0zWwK7.mp4?updatedAt=1764682393464",
+        file_name="video_ok_testt.mp4",
     )
 
         return Response(upload.response_metadata.raw)
