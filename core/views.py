@@ -2,7 +2,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
 from .serializers import PingSerializer, HealthCheckSerializer, VersionSerializer
+from imagekitio import ImageKit
 
+imagekit = ImageKit(
+    public_key='public_h25G9MGlkxXsMj63Drey92giQEM=',
+    private_key='private_CBddGCKEuY8r/Y7MK6OmryhvB7Q=',
+    url_endpoint = 'https://ik.imagekit.io/nnatxct7i'
+)
 
 class HealthCheckView(APIView):
     @extend_schema(
@@ -35,3 +41,21 @@ class PingView(APIView):
     )
     def get(self, request):
         return Response({"message": "pong"})
+
+class upload(APIView):
+    @extend_schema(
+        summary="upload",
+        description="upload video",
+        responses={200: PingSerializer},
+        tags=["core"],
+    )
+    def post(self, request):
+        upload = imagekit.upload(
+        file="https://ik.imagekit.io/ikmedia/red_dress_woman.jpeg",
+        file_name="women_in_red.jpg",
+    )
+
+        return Response(upload.response_metadata.raw)
+     
+
+   
