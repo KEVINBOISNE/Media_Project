@@ -13,6 +13,7 @@ class UploadSerializer(serializers.Serializer):
     file = serializers.CharField()
     fileName = serializers.CharField()
 
+
     def validate_uploadSerializer(self, data):
         if not isinstance(data.get("file"), str) :
             raise serializers.ValidationError({"file":"file isn't valide" })
