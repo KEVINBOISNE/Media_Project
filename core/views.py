@@ -51,7 +51,7 @@ class upload(APIView):
         summary="upload",
         description="upload video",
         responses={200: PingSerializer},
-        request=UploadSerializer,
+       # request=UploadSerializer,
         tags=["Upload"],
 
         # parameters=[
@@ -100,9 +100,9 @@ class upload(APIView):
 
         auth_string = f"{private_key}:"
         auth_header = base64.b64encode(auth_string.encode()).decode()
-        file = request.data.get("file")
-        fileName =request.data.get("fileName")
-        upload = ImageKit.upload(file, fileName)
+        # file = request.data.get("file")
+        # fileName =request.data.get("fileName")
+        # upload = ImageKit.upload(file, fileName)
 
         url = "https://upload.imagekit.io/api/v1/files/upload"
 

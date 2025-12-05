@@ -1,13 +1,83 @@
-version: '3.9'
+# version: '3.9'
+
+networks:
+  app-network:
+    driver: bridge
 
 services:
+  mediapsql:
+    image: postgres:14
+    volumes:
+      - ./docker_ressources:/docker-entrypoint-initdb.d
+      - pg_media_data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: ${PSQL_USER}
+      POSTGRES_PASSWORD: ${PSQL_PASSWORD}
+      POSTGRES_DB: ${PSQL_DB}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U media"]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  mediamongo:
+    image: mongo
+    container_name: media-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${M_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${M_PASSWORD}
+    healthcheck:
+       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+       interval: 30s
+       timeout: 10s
+       retries: 5
+    networks:
+      - app-network
+
+  mediaredis:
+    image: redis:7.4-alpine
+    restart: always
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    healthcheck:
+       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+       interval: 30s
+       timeout: 10s
+       retries: 5
+    ports:
+      - "6379:6379"
+    volumes:
+      - cache:/data
+    networks:
+      - app-network
+
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
+    depends_on:
+      - mediapsql
+      - mediamongo
+      - mediaredis
+    env_file:
+    - .env
+    networks:
+      - app-network
     develop:
       watch:
         - action: sync
           path: ./
           target: /app/
+
+volumes:
+  cache:
+    driver: local
+  pg_media_data:
+

@@ -2,4 +2,8 @@ Django==5.2.8
 drf-spectacular
 djangorestframework
 imagekitio
+python-dotenv
+psycopg[binary]
+
+
 
